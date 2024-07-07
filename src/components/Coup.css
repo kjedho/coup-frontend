@@ -2,6 +2,6 @@
     color-scheme: light dark;
 }
 body {
-    color: light-dark(#efefec);
-    background-color: light-dark(#3e3e42);
+    color: #ffffff;
+    background-color: #0f1214b2;
 }
