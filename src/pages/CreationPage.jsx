@@ -11,7 +11,7 @@ function CreationPage() {
         flexDirection: 'column',
         display: 'flex',
         minHeight: '90vh',
-        maxWidth: '60vw',
+        maxWidth: '80vw',
         justifyContent: 'space-between',
         padding: '5vh',
       }}
