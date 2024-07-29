@@ -47,7 +47,7 @@ function PlayerCard({ playerState }) {
                         {playerState.name}
                     </Typography>
                     <Stack direction="row" spacing="20px">
-                        {cardIcon1 && <img src={cardIcon1} height="250px">.border-radius {}</img>}
+                        {cardIcon1 && <img src={cardIcon1} height="250px" />}
                         {cardIcon2 && <img src={cardIcon2} height="250px" />}
                     </Stack>
                     <Typography>
