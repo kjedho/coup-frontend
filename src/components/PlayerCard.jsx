@@ -38,10 +38,10 @@ function PlayerCard({ playerState }) {
     return(
        <Box display="flex">
             <Stack direction="row" alignItems="center" spacing="20px">
-                <img src={coinImage} height="50px" />
                 <Typography variant="h6">
-                    x {playerState.coins}
+                    {playerState.coins} x
                 </Typography>
+                <img src={coinImage} height="50px" />
                 <Stack direction="column" alignItems="center" spacing="20px">
                     <Typography variant="h5">
                         {playerState.name}
