@@ -16,7 +16,7 @@ function CreationPage() {
         padding: '5vh',
       }}
     >
-        <Header />
+        <Header title="Welcome to Coup online!" subtitle="The place to be to play Coup privately with friends."/>
         <Creation />
         <Footer />
     </Box>

@@ -5,6 +5,8 @@ import GamePage from "./pages/GamePage";
 function App() {
   // TODO: remove the following line
   const gameState = {
+    title: "Player 1's turn",
+    subtitle: "Choose an action",
     players: [
       {
         name: "Player 1",
@@ -13,7 +15,7 @@ function App() {
           {role: "Contessa", visible: true}
         ],
         coins: 2,
-        action: "Income"
+        loading: 0,
       },
       {
         name: "Player 2",
@@ -22,8 +24,44 @@ function App() {
           {role: "Captain", visible: false}
         ],
         coins: 6,
-        action: "Steal"
-      }
+        loading: 30,
+      },
+      {
+        name: "Player 3",
+        cards: [
+          {role: "Ambassador", visible: true},
+          {role: "Duke", visible: false}
+        ],
+        coins: 4,
+        loading: 60,
+      },
+      {
+        name: "Player 4",
+        cards: [
+          {role: "Duke", visible: true},
+          {role: "Contessa", visible: true}
+        ],
+        coins: 0,
+        loading: 90,
+      },
+      {
+        name: "Player 5",
+        cards: [
+          {role: "Assassin", visible: true},
+          {role: "Captain", visible: false}
+        ],
+        coins: 6,
+        loading: 100,
+      },
+      {
+        name: "Player 6",
+        cards: [
+          {role: "Ambassador", visible: true},
+          {role: "Duke", visible: false}
+        ],
+        coins: 4,
+        loading: 40,
+      },
     ]
   };
 

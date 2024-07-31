@@ -1,16 +1,22 @@
 import { Typography } from '@mui/material';
+import PropTypes from 'prop-types';
 
-function Header() {
+function Header({ title, subtitle }) {
     return(
         <header>
             <Typography variant="h2" textAlign="center">
-                Welcome to Coup online!
+                { title }
             </Typography>
             <Typography variant="h4" textAlign="center" color="primary">
-                <em>The place to be to play Coup privately with friends.</em>
+                <em>{ subtitle }</em>
             </Typography>
         </header>
     );
 }
+
+Header.propTypes = {
+    title: PropTypes.string.isRequired,
+    subtitle: PropTypes.string.isRequired,
+};
 
 export default Header;

@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, LinearProgress, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 
 import dukeImage from "../assets/duke.png";
@@ -47,12 +47,12 @@ function PlayerCard({ playerState }) {
                         {playerState.name}
                     </Typography>
                     <Stack direction="row" spacing="20px">
-                        {cardIcon1 && <img src={cardIcon1} height="250px" />}
-                        {cardIcon2 && <img src={cardIcon2} height="250px" />}
+                        {cardIcon1 && <img src={cardIcon1} height="200px" />}
+                        {cardIcon2 && <img src={cardIcon2} height="200px" />}
                     </Stack>
-                    <Typography>
-                        {playerState.action}
-                    </Typography>
+                    <Box sx={{ width: '100%' }}>
+                        {playerState.loading != 0 && <LinearProgress variant="determinate" value={playerState.loading} />}
+                    </Box>
                 </Stack>
             </Stack>
        </Box>

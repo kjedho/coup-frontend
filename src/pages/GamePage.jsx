@@ -1,11 +1,11 @@
 import { Box } from "@mui/material";
-import Footer from "../components/Footer";
 import TwoPlayerLayout from "../components/TwoPlayerLayout";
 import ThreePlayerLayout from "../components/ThreePlayerLayout";
 import FourPlayerLayout from "../components/FourPlayerLayout";
 import FivePlayerLayout from "../components/FivePlayerLayout";
 import SixPlayerLayout from "../components/SixPlayerLayout";
 import PropTypes from "prop-types";
+import Header from "../components/Header";
 
 const GameLayout = ({ gameState }) => {
   switch(gameState.players.length) {
@@ -35,13 +35,12 @@ function GamePage({ gameState }) {
         flexDirection: 'column',
         display: 'flex',
         minHeight: '90vh',
-        maxWidth: '80vw',
+        maxWidth: '90vw',
         justifyContent: 'space-evenly',
-        padding: '5vh',
       }}
     >
+      <Header title={gameState.title} subtitle={gameState.subtitle} />
       <GameLayout gameState={gameState} />
-      <Footer />
     </Box>
   );
 }
