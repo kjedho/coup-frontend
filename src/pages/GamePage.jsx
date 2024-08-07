@@ -35,8 +35,9 @@ function GamePage({ gameState }) {
         flexDirection: 'column',
         display: 'flex',
         minHeight: '90vh',
-        maxWidth: '90vw',
         justifyContent: 'space-evenly',
+        marginLeft: 'auto',
+        marginRight: 'auto',
       }}
     >
       <Header title={gameState.title} subtitle={gameState.subtitle} />

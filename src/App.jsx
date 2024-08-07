@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import CreationPage from "./pages/CreationPage";
+import LandingPage from "./pages/LandingPage";
 import GamePage from "./pages/GamePage";
 
 function App() {
@@ -68,7 +68,7 @@ function App() {
   return (
     <>
     <Routes>
-      <Route path="/" element={<CreationPage />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/game" element={<GamePage gameState={gameState} />} />
     </Routes>
     </>

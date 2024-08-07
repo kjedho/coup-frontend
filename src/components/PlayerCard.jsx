@@ -1,5 +1,6 @@
 import { Box, LinearProgress, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
+import { NestedDropdown } from 'mui-nested-menu';
 
 import dukeImage from "../assets/duke.png";
 import assassinImage from "../assets/assassin.png";
@@ -31,17 +32,116 @@ determineCardIcon.propTypes = {
     card: PropTypes.object.isRequired,
 };
 
+const determineDropdownItems = (playerState) => {
+    const menuItemsData = {
+        label: 'Actions',
+        items: [
+            {
+                label: 'Income',
+                callback: (event, item) => console.log('Income clicked', event, item),
+            },
+            {
+                label: 'Foreign aid',
+                callback: (event, item) => console.log('Foreign aid clicked', event, item),
+            },
+            {
+                label: 'Coup',
+                callback: (event, item) => console.log('Foreign aid clicked', event, item),
+            },
+            {
+                label: 'Duke',
+                delay: 300,
+                items: [
+                {
+                    label: 'Tax',
+                    callback: (event, item) => console.log('Duke > Tax clicked', event, item),
+                },
+                {
+                    label: 'Block foreign aid',
+                    callback: (event, item) => console.log('Duke > Block foreign aid clicked', event, item),
+                    // disabled: true,
+                },
+                ],
+            },
+            {
+                label: 'Assassin',
+                delay: 300,
+                items: [
+                    {
+                        label: 'Assassinate',
+                        callback: (event, item) => console.log('Assassin > Assassinate clicked', event, item),
+                    },
+                ],
+            },
+            {
+                label: 'Captain',
+                delay: 300,
+                items: [
+                    {
+                        label: 'Steal',
+                        callback: (event, item) => console.log('Captain > Steal clicked', event, item),
+                    },
+                    {
+                        label: 'Block stealing',
+                        callback: (event, item) => console.log('Captain > Block stealing clicked', event, item),
+                    },
+                ],
+            },
+            {
+                label: 'Ambassador',
+                delay: 300,
+                items: [
+                    {
+                        label: 'Exchange',
+                        callback: (event, item) => console.log('Ambassador > Exchange clicked', event, item),
+                    },
+                    {
+                        label: 'Block stealing',
+                        callback: (event, item) => console.log('Ambassador > Block stealing clicked', event, item),
+                    },
+                ],
+            },
+            {
+                label: 'Contessa',
+                delay: 300,
+                items: [
+                {
+                    label: 'Block assassination',
+                    callback: (event, item) => console.log('Contessa > Block assassination clicked', event, item),
+                },
+                ],
+            },
+        ],
+    };
+    return menuItemsData;
+}
+
+determineDropdownItems.propTypes = {
+    playerState: PropTypes.object.isRequired,
+};
+
 function PlayerCard({ playerState }) {
     const cardIcon1 = determineCardIcon(playerState.cards[0]);
     const cardIcon2 = determineCardIcon(playerState.cards[1]);
+    const menuItemsData = determineDropdownItems(playerState);
 
     return(
-       <Box display="flex">
+       <Box display="flex" justifyContent="center">
             <Stack direction="row" alignItems="center" spacing="20px">
-                <Typography variant="h6">
-                    {playerState.coins} x
-                </Typography>
-                <img src={coinImage} height="50px" />
+                <Stack direction="column" alignItems="center" spacing="20px">
+                    <Stack direction="row" alignItems="center" spacing="20px">
+                        <Typography variant="h6">
+                            {playerState.coins} x
+                        </Typography>
+                        <img src={coinImage} height="50px" />
+                    </Stack>
+                <NestedDropdown
+                    menuItemsData={menuItemsData}
+                    MenuProps={{elevation: 3}}
+                    ButtonProps={{variant: 'contained'}}
+                    onClick={() => console.log('Clicked')}
+                />
+                </Stack>
                 <Stack direction="column" alignItems="center" spacing="20px">
                     <Typography variant="h5">
                         {playerState.name}

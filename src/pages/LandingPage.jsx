@@ -3,7 +3,7 @@ import Creation from "../components/Creation";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
-function CreationPage() {
+function LandingPage() {
   return (
     <Container>
     <Box
@@ -24,4 +24,4 @@ function CreationPage() {
   );
 }
 
-export default CreationPage;
+export default LandingPage;
