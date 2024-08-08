@@ -1,9 +1,22 @@
 import { Route, Routes } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import GamePage from "./pages/GamePage";
+import LobbyPage from "./pages/LobbyPage";
 
 function App() {
-  // TODO: remove the following line
+  // TODO: remove the following lines
+  const playerState = {
+    lobby: "dummy-lobby-link",
+    players: [
+      {name: "Player 1", ready: true},
+      {name: "Player 2", ready: true},
+      {name: "Player 3", ready: true},
+      {name: "Player 4", ready: true},
+      {name: "Player 5", ready: false},
+      {name: "Player 6", ready: false},
+    ]
+  };
+
   const gameState = {
     title: "Player 1's turn",
     subtitle: "Choose an action",
@@ -38,8 +51,8 @@ function App() {
       {
         name: "Player 4",
         cards: [
-          {role: "Duke", visible: true},
-          {role: "Contessa", visible: true}
+          {role: "Captain", visible: true},
+          {role: "Assassin", visible: true}
         ],
         coins: 0,
         loading: 90,
@@ -47,8 +60,8 @@ function App() {
       {
         name: "Player 5",
         cards: [
-          {role: "Assassin", visible: true},
-          {role: "Captain", visible: false}
+          {role: "Contessa", visible: true},
+          {role: "Ambassador", visible: false}
         ],
         coins: 6,
         loading: 100,
@@ -56,8 +69,8 @@ function App() {
       {
         name: "Player 6",
         cards: [
-          {role: "Ambassador", visible: true},
-          {role: "Duke", visible: false}
+          {role: "Captain", visible: true},
+          {role: "Captain", visible: false}
         ],
         coins: 4,
         loading: 40,
@@ -69,6 +82,7 @@ function App() {
     <>
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/lobby" element={<LobbyPage playerState={playerState} />} />
       <Route path="/game" element={<GamePage gameState={gameState} />} />
     </Routes>
     </>

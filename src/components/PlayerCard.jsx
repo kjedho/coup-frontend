@@ -32,6 +32,10 @@ determineCardIcon.propTypes = {
     card: PropTypes.object.isRequired,
 };
 
+const ambassadorExchange = (playerState) => {
+    //TODO
+}
+
 const determineDropdownItems = (playerState) => {
     const menuItemsData = {
         label: 'Actions',
@@ -47,6 +51,7 @@ const determineDropdownItems = (playerState) => {
             {
                 label: 'Coup',
                 callback: (event, item) => console.log('Foreign aid clicked', event, item),
+                //TODO: extra nested dropdown to select target player
             },
             {
                 label: 'Duke',
@@ -93,7 +98,7 @@ const determineDropdownItems = (playerState) => {
                 items: [
                     {
                         label: 'Exchange',
-                        callback: (event, item) => console.log('Ambassador > Exchange clicked', event, item),
+                        callback: () => ambassadorExchange(playerState),
                     },
                     {
                         label: 'Block stealing',
