@@ -2,7 +2,9 @@
 import { useState } from 'react';
 import { createGame } from '../api/createGame';
 import { joinGame } from '../api/joinGame';
+import { getGame } from '../api/getGame';
 import { Box, Stack, TextField, Button, FormControl, InputLabel, Select, MenuItem, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 function ValidName(name) {
     const re = /^[0-9A-Za-z]{6,16}$/;
@@ -14,6 +16,21 @@ function ValidUuidV4(uuid) {
     return re.test(uuid);
 }
 
+function CreateAndJoinLobby(name, numberOfPlayers, navigate) {
+    createGame(name, numberOfPlayers)
+    .then(uuid => {
+        getGame(uuid)
+        .then(game => {
+            var playerState = {"players": []};
+            console.log("game.players:", game.players);
+            game.players.forEach(player => {
+                playerState["players"].push({"name": player.name, "ready": true});
+            })
+            navigate("/lobby", {state: { playerState }});
+        })
+    })
+}
+
 function Creation() {
     const [name, setName] = useState("");
     const [numberOfPlayers, setNumberOfPlayers] = useState(2);
@@ -21,7 +38,7 @@ function Creation() {
     const columnWidth = "15vw";
     const createButtonEnabled = 1 < numberOfPlayers && numberOfPlayers < 7 && ValidName(name);
     const joinButtonEnabled = ValidName(name) && ValidUuidV4(uuid);
-
+    const navigate = useNavigate();
 
     return (
         <Stack direction="row" alignItems="center" justifyContent="space-evenly">
@@ -68,7 +85,7 @@ function Creation() {
                         variant="contained"
                         disabled={!createButtonEnabled}
                         sx={{ width: columnWidth, marginTop: "1vh" }}
-                        onClick={() => createGame(name, numberOfPlayers)}
+                        onClick={() => CreateAndJoinLobby(name, numberOfPlayers, navigate)}
                     >
                         Create private lobby
                     </Button>

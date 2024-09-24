@@ -5,18 +5,6 @@ import LobbyPage from "./pages/LobbyPage";
 
 function App() {
   // TODO: remove the following lines
-  const playerState = {
-    lobby: "dummy-lobby-link",
-    players: [
-      {name: "Player 1", ready: true},
-      {name: "Player 2", ready: true},
-      {name: "Player 3", ready: true},
-      {name: "Player 4", ready: true},
-      {name: "Player 5", ready: false},
-      {name: "Player 6", ready: false},
-    ]
-  };
-
   const gameState = {
     title: "Player 1's turn",
     subtitle: "Choose an action",
@@ -82,7 +70,7 @@ function App() {
     <>
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/lobby" element={<LobbyPage playerState={playerState} />} />
+      <Route path="/lobby" element={<LobbyPage />} />
       <Route path="/game" element={<GamePage gameState={gameState} />} />
     </Routes>
     </>

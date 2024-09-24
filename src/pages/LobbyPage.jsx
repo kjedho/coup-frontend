@@ -2,9 +2,12 @@ import { Box, Container } from '@mui/material';
 import Lobby from "../components/Lobby";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 
-function LobbyPage({ playerState }) {
+function LobbyPage() {
+  const location = useLocation();
+  const { playerState } = location.state || {};
+  
   return (
     <Container>
     <Box
@@ -24,9 +27,5 @@ function LobbyPage({ playerState }) {
     </Container>
   );
 }
-
-LobbyPage.propTypes = {
-  playerState: PropTypes.object.isRequired
-};
 
 export default LobbyPage;
