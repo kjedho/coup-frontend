@@ -19,7 +19,7 @@ function Lobby({ playerState }) {
                 </Typography>
                 {playerState.players.map((player, index) => (
                     <Stack key={index} direction="row" justifyContent="center" spacing={5}>
-                        <Typography variant="h5" textAlign="center">
+                        <Typography variant="h5" textAlign="center" width="200px">
                             {player.name}
                         </Typography>
                         <Button variant="contained" color={player.ready ? "success" : "error"} sx={{ width: "100px" }} >
@@ -29,14 +29,14 @@ function Lobby({ playerState }) {
                 ))}
                 <CopyToClipboard text={ playerState.lobby } >
                     <Button variant="outlined" color="primary" size="medium" onClick={() => {setAlert(true)}}>
-                        Copy lobby link
+                        Copy lobby code
                     </Button>
                 </CopyToClipboard>
                 <Button variant="contained" color="primary" size="medium">
                     Start game
                 </Button>
             </Stack>
-            {showAlert && <Alert variant="outlined" severity="success" onClose={() => {setAlert(false)}} sx={{ margin: "16px" }}>Lobby link copied to clipboard!</Alert>}
+            {showAlert && <Alert variant="outlined" severity="success" onClose={() => {setAlert(false)}} sx={{ margin: "16px" }}>Lobby code copied to clipboard!</Alert>}
         </Container>
     );
 }

@@ -21,10 +21,10 @@ function CreateAndJoinLobby(name, numberOfPlayers, navigate) {
     .then(uuid => {
         getGame(uuid)
         .then(game => {
-            var playerState = {"players": []};
+            var playerState = {"players": [], "lobby": uuid};
             console.log("game.players:", game.players);
             game.players.forEach(player => {
-                playerState["players"].push({"name": player.name, "ready": true});
+                playerState["players"].push({"name": player.name, "ready": player.joined});
             })
             navigate("/lobby", {state: { playerState }});
         })
