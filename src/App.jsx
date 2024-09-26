@@ -1,9 +1,27 @@
 import { Route, Routes } from "react-router-dom";
+import useWebSocket, { ReadyState } from "react-use-websocket";
+import { useEffect } from "react";
+
 import LandingPage from "./pages/LandingPage";
 import GamePage from "./pages/GamePage";
 import LobbyPage from "./pages/LobbyPage";
 
 function App() {
+  const { sendMessage, lastMessage, readyState} = useWebSocket("wss://localhost:8080");
+
+  // Run when the connection state (readyState) changes
+  useEffect(() => {
+    console.log("Connection state changed")
+    if (readyState === ReadyState.OPEN) {
+      sendMessage("Hello, world!")
+    }
+  }, [readyState])
+
+  // Run when a new WebSocket message is received (lastJsonMessage)
+  useEffect(() => {
+    console.log(`Got a new message: ${lastMessage}`)
+  }, [lastMessage])
+
   // TODO: remove the following lines
   const gameState = {
     title: "Player 1's turn",
