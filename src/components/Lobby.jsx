@@ -6,7 +6,15 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-function Lobby({ playerState }) {
+const playerList = ({ lobbyState }) => {
+    var playerList = lobbyState.players;
+    for (var i = playerList.length(); i < lobbyState.numPlayers-playerList.length()+1; i++) {
+        playerList.push({name: "Player "+i+1, ready: false});
+    }
+    return playerList;
+};
+
+function Lobby({ lobbyState, sendMessage }) {
     const theme = useTheme();
     const primary = theme.palette.primary.main;
     const [showAlert, setAlert] = useState(false);
@@ -17,7 +25,7 @@ function Lobby({ playerState }) {
                 <Typography variant="h4" textAlign="center">
                     Players in the lobby
                 </Typography>
-                {playerState.players.map((player, index) => (
+                {playerList(lobbyState).map((player, index) => (
                     <Stack key={index} direction="row" justifyContent="center" spacing={5}>
                         <Typography variant="h5" textAlign="center" width="200px">
                             {player.name}
@@ -27,7 +35,7 @@ function Lobby({ playerState }) {
                         </Button>
                     </Stack>
                 ))}
-                <CopyToClipboard text={ playerState.lobby } >
+                <CopyToClipboard text={ lobbyState.sessionUUID } >
                     <Button variant="outlined" color="primary" size="medium" onClick={() => {setAlert(true)}}>
                         Copy lobby code
                     </Button>
@@ -42,7 +50,8 @@ function Lobby({ playerState }) {
 }
 
 Lobby.propTypes = {
-    playerState: PropTypes.object.isRequired
+    lobbyState: PropTypes.object.isRequired,
+    sendMessage: PropTypes.func.isRequired
 };
 
 export default Lobby;

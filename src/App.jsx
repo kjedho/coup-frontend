@@ -1,95 +1,48 @@
 import { Route, Routes } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { useState } from "react";
 import { useEffect } from "react";
 
 import LandingPage from "./pages/LandingPage";
 import GamePage from "./pages/GamePage";
 import LobbyPage from "./pages/LobbyPage";
+import { WEBSOCKET_URL } from "./api/constants";
 
 function App() {
-  const { sendMessage, lastMessage, readyState} = useWebSocket("wss://localhost:8080");
+  const { sendMessage, lastMessage, readyState} = useWebSocket(WEBSOCKET_URL);
+  const { lobbyState, setLobbyState } = useState({sessionUUID: "", numPlayers: 2, players: []});
+  const { gameState, setGameState } = useState({title: "", subtitle: "", players: []});
 
-  // Run when the connection state (readyState) changes
   useEffect(() => {
-    console.log("Connection state changed")
-    if (readyState === ReadyState.OPEN) {
-      sendMessage("Hello, world!")
+    if (readyState === ReadyState.CONNECTING) {
+      console.log("Connection state CONNECTING.")
+    } else if (readyState === ReadyState.OPEN) {
+      console.log("Connection state OPEN.")
+    } else if (readyState === ReadyState.CLOSING) {
+      console.log("Connection state CLOSING.")
+    } else if (readyState === ReadyState.CLOSED) {
+      console.log("Connection state CLOSED.")
     }
   }, [readyState])
 
-  // Run when a new WebSocket message is received (lastJsonMessage)
   useEffect(() => {
-    console.log(`Got a new message: ${lastMessage}`)
+    const message = JSON.parse(lastMessage);
+    if (message) {
+      console.log(`Got a new message: ${message}`);
+      if ("lobbyState" in message) {
+        setLobbyState(message.lobbyState);
+      } else if ("gameState" in message) {
+        setGameState(message.gameState);
+      }
+    }
   }, [lastMessage])
-
-  // TODO: remove the following lines
-  const gameState = {
-    title: "Player 1's turn",
-    subtitle: "Choose an action",
-    players: [
-      {
-        name: "Player 1",
-        cards: [
-          {role: "Duke", visible: true},
-          {role: "Contessa", visible: true}
-        ],
-        coins: 2,
-        loading: 0,
-      },
-      {
-        name: "Player 2",
-        cards: [
-          {role: "Assassin", visible: true},
-          {role: "Captain", visible: false}
-        ],
-        coins: 6,
-        loading: 30,
-      },
-      {
-        name: "Player 3",
-        cards: [
-          {role: "Ambassador", visible: true},
-          {role: "Duke", visible: false}
-        ],
-        coins: 4,
-        loading: 60,
-      },
-      {
-        name: "Player 4",
-        cards: [
-          {role: "Captain", visible: true},
-          {role: "Assassin", visible: true}
-        ],
-        coins: 0,
-        loading: 90,
-      },
-      {
-        name: "Player 5",
-        cards: [
-          {role: "Contessa", visible: true},
-          {role: "Ambassador", visible: false}
-        ],
-        coins: 6,
-        loading: 100,
-      },
-      {
-        name: "Player 6",
-        cards: [
-          {role: "Captain", visible: true},
-          {role: "Captain", visible: false}
-        ],
-        coins: 4,
-        loading: 40,
-      },
-    ]
-  };
 
   return (
     <>
     <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/lobby" element={<LobbyPage />} />
-      <Route path="/game" element={<GamePage gameState={gameState} />} />
+      <Route path="/" element={<LandingPage sendMessage={sendMessage}/>} />
+      <Route path="/lobby" element={<LobbyPage lobbyState={lobbyState} sendMessage={sendMessage}/>} />
+      <Route path="/game" element={<GamePage gameState={gameState} sendMessage={sendMessage}/>} />
     </Routes>
     </>
   );

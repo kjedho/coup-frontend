@@ -1,13 +1,11 @@
 import { Box, Container } from '@mui/material';
+import PropTypes from 'prop-types';
+
 import Lobby from "../components/Lobby";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { useLocation } from 'react-router-dom';
 
-function LobbyPage() {
-  const location = useLocation();
-  const { playerState } = location.state || {};
-  
+function LobbyPage({ lobbyState, sendMessage }) {
   return (
     <Container>
     <Box
@@ -21,11 +19,16 @@ function LobbyPage() {
       }}
     >
         <Header title="Welcome to the private Coup lobby" subtitle="Please wait until all players have joined."/>
-        <Lobby playerState={playerState} />
+        <Lobby lobbyState={lobbyState} sendMessage={sendMessage} />
         <Footer />
     </Box>
     </Container>
   );
 }
+
+LobbyPage.propTypes = {
+  lobbyState: PropTypes.object.isRequired,
+  sendMessage: PropTypes.func.isRequired
+};
 
 export default LobbyPage;

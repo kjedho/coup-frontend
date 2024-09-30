@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import PlayerLayout from "../components/PlayerLayout";
 import Footer from "../components/Footer";
 
-function GamePage({ gameState }) {
+function GamePage({ gameState, sendMessage }) {
   return (
     <Box
       sx={{
@@ -24,7 +24,8 @@ function GamePage({ gameState }) {
 }
 
 GamePage.propTypes = {
-  gameState: PropTypes.object.isRequired
+  gameState: PropTypes.object.isRequired,
+  sendMessage: PropTypes.func.isRequired
 };
 
 export default GamePage;
