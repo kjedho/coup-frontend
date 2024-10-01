@@ -6,18 +6,22 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-const playerList = ({ lobbyState }) => {
-    var playerList = lobbyState.players;
-    for (var i = playerList.length(); i < lobbyState.numPlayers-playerList.length()+1; i++) {
-        playerList.push({name: "Player "+i+1, ready: false});
+function playerList({ lobbyState }) {
+    var playerList = [];
+    for (var i = 0; i < lobbyState.players.length; i++) {
+        playerList.push({name: lobbyState.players[i], ready: true});
+    }
+    for (var j = playerList.length; j < lobbyState.numPlayers; j++) {
+        playerList.push({name: "Player "+(j+1), ready: false});
     }
     return playerList;
-};
+}
 
 function Lobby({ lobbyState, sendMessage }) {
     const theme = useTheme();
     const primary = theme.palette.primary.main;
     const [showAlert, setAlert] = useState(false);
+    const players = playerList({lobbyState});
 
     return (
         <Container sx={{ border: '4px '+primary+' solid', borderRadius: '10px', width: '475px', padding: '30px' }} >
@@ -25,7 +29,7 @@ function Lobby({ lobbyState, sendMessage }) {
                 <Typography variant="h4" textAlign="center">
                     Players in the lobby
                 </Typography>
-                {playerList(lobbyState).map((player, index) => (
+                {players.map((player, index) => (
                     <Stack key={index} direction="row" justifyContent="center" spacing={5}>
                         <Typography variant="h5" textAlign="center" width="200px">
                             {player.name}

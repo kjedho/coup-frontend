@@ -9,9 +9,10 @@ import LobbyPage from "./pages/LobbyPage";
 import { WEBSOCKET_URL } from "./api/constants";
 
 function App() {
-  const { sendMessage, lastMessage, readyState} = useWebSocket(WEBSOCKET_URL);
-  const { lobbyState, setLobbyState } = useState({sessionUUID: "", numPlayers: 2, players: []});
-  const { gameState, setGameState } = useState({title: "", subtitle: "", players: []});
+  const {sendMessage, lastMessage, readyState} = useWebSocket(WEBSOCKET_URL);
+
+  const [lobbyState, setLobbyState] = useState({sessionUUID: "", numPlayers: 2, players: ["Player 1"]});
+  const [gameState, setGameState] = useState({title: "", subtitle: "", players: []});
 
   useEffect(() => {
     if (readyState === ReadyState.CONNECTING) {
@@ -26,14 +27,19 @@ function App() {
   }, [readyState])
 
   useEffect(() => {
-    const message = JSON.parse(lastMessage);
-    if (message) {
-      console.log(`Got a new message: ${message}`);
+    if (!lastMessage) {
+      return;
+    }
+    try {
+      const message = JSON.parse(lastMessage.data);      
+      console.log(`Parsed message: ${JSON.stringify(message)}`);
       if ("lobbyState" in message) {
         setLobbyState(message.lobbyState);
       } else if ("gameState" in message) {
         setGameState(message.gameState);
       }
+    } catch (error) {
+      console.log(lastMessage.data);  
     }
   }, [lastMessage])
 

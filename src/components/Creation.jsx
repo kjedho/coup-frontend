@@ -101,7 +101,7 @@ function Creation({ sendMessage }) {
                         variant="contained"
                         disabled={!joinButtonEnabled}
                         sx={{ width: columnWidth, marginTop: "1vh" }}
-                        onClick={() => joinLobby(name, uuid, sendMessage)}
+                        onClick={() => joinLobby(name, uuid, sendMessage, navigate)}
                     >
                         Join private lobby
                     </Button>
