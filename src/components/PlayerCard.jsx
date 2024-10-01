@@ -124,7 +124,7 @@ determineDropdownItems.propTypes = {
     playerState: PropTypes.object.isRequired,
 };
 
-function PlayerCard({ playerState }) {
+function PlayerCard({ playerState, enableAction }) {
     const cardIcon1 = 0 in playerState.cards ? determineCardIcon(playerState.cards[0]) : backsideImage;
     const cardIcon2 = 1 in playerState.cards ? determineCardIcon(playerState.cards[1]) : backsideImage;
     const menuItemsData = determineDropdownItems(playerState);
@@ -139,12 +139,12 @@ function PlayerCard({ playerState }) {
                         </Typography>
                         <img src={coinImage} height="50px" />
                     </Stack>
-                <NestedDropdown
+                {enableAction && <NestedDropdown
                     menuItemsData={menuItemsData}
                     MenuProps={{elevation: 3}}
                     ButtonProps={{variant: 'contained'}}
                     onClick={() => console.log('Clicked')}
-                />
+                />}
                 </Stack>
                 <Stack direction="column" alignItems="center" spacing="20px">
                     <Typography variant="h5">

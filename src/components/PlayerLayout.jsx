@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 function PlayerLayout({ gameState }) {
     const playerCards = gameState.players.map((player, index) => 
         <Grid item sm={4} key={index}>
-            <PlayerCard playerState={player} />
+            <PlayerCard playerState={player[0]} enableAction={player[1]} />
         </Grid>
     );
     return(
