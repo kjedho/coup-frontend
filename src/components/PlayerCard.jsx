@@ -11,7 +11,6 @@ import backsideImage from "../assets/backside.png";
 import coinImage from "../assets/coin.png";
 
 const determineCardIcon = (card) => {
-    if (!card.visible) return backsideImage;
     switch(card.role) {
         case "Duke":
             return dukeImage;
@@ -24,7 +23,7 @@ const determineCardIcon = (card) => {
         case "Contessa":
             return contessaImage;
         default:
-            return "";
+            return backsideImage;
     }
 }
 
@@ -126,8 +125,8 @@ determineDropdownItems.propTypes = {
 };
 
 function PlayerCard({ playerState }) {
-    const cardIcon1 = determineCardIcon(playerState.cards[0]);
-    const cardIcon2 = determineCardIcon(playerState.cards[1]);
+    const cardIcon1 = 0 in playerState.cards ? determineCardIcon(playerState.cards[0]) : backsideImage;
+    const cardIcon2 = 1 in playerState.cards ? determineCardIcon(playerState.cards[1]) : backsideImage;
     const menuItemsData = determineDropdownItems(playerState);
 
     return(
@@ -155,9 +154,9 @@ function PlayerCard({ playerState }) {
                         {cardIcon1 && <img src={cardIcon1} height="200px" />}
                         {cardIcon2 && <img src={cardIcon2} height="200px" />}
                     </Stack>
-                    <Box sx={{ width: '100%' }}>
+                    {/* <Box sx={{ width: '100%' }}>
                         {playerState.loading != 0 && <LinearProgress variant="determinate" value={playerState.loading} />}
-                    </Box>
+                    </Box> */}
                 </Stack>
             </Stack>
        </Box>
