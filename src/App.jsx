@@ -14,6 +14,7 @@ function App() {
 
   const [lobbyState, setLobbyState] = useState({room_uuid: "", num_players: 2, players: ["Player 1"]});
   const [gameState, setGameState] = useState({title: "", subtitle: "", players: [], coins: 0, current_player: ""});
+  const [playerUuid, setPlayerUuid] = useState("");
 
   useEffect(() => {
     if (readyState === ReadyState.CONNECTING) {
@@ -39,6 +40,8 @@ function App() {
       } else if ("coins" in message) {
         setGameState(message);
         navigate("/game");
+      } else if ("player_uuid" in message) {
+        setPlayerUuid(message.player_uuid);
       }
     } catch (error) {
       console.log(lastMessage.data);  
@@ -50,7 +53,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage sendMessage={sendMessage}/>} />
       <Route path="/lobby" element={<LobbyPage lobbyState={lobbyState} sendMessage={sendMessage}/>} />
-      <Route path="/game" element={<GamePage gameState={gameState} sendMessage={sendMessage}/>} />
+      <Route path="/game" element={<GamePage playerUuid={playerUuid} gameState={gameState} sendMessage={sendMessage}/>} />
     </Routes>
     </>
   );

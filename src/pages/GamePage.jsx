@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import PlayerLayout from "../components/PlayerLayout";
 import Footer from "../components/Footer";
 
-function GamePage({ gameState, sendMessage }) {
+function GamePage({ playerUuid, gameState, sendMessage }) {
   return (
     <Box
       sx={{
@@ -17,13 +17,14 @@ function GamePage({ gameState, sendMessage }) {
       }}
     >
       <Header title={gameState.title} subtitle={gameState.subtitle} />
-      <PlayerLayout gameState={gameState} />
+      <PlayerLayout playerUuid={playerUuid} gameState={gameState} sendMessage={sendMessage}/>
       <Footer />
     </Box>
   );
 }
 
 GamePage.propTypes = {
+  playerUuid: PropTypes.string.isRequired,
   gameState: PropTypes.object.isRequired,
   sendMessage: PropTypes.func.isRequired
 };

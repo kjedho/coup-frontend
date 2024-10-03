@@ -1,4 +1,4 @@
-import { Box, LinearProgress, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { NestedDropdown } from 'mui-nested-menu';
 
@@ -31,92 +31,85 @@ determineCardIcon.propTypes = {
     card: PropTypes.object.isRequired,
 };
 
-const ambassadorExchange = (playerState) => {
-    //TODO
-}
+const determineDropdownItems = (gameState, playerUuid, playerState, enableAction, sendMessage) => {
+    if (!enableAction) {
+        return {};
+    }
+    let menuItemsData = {label: 'Actions', items: []};
+    let otherPlayers = gameState.players.filter(p => p[0].uuid != playerUuid);
+    otherPlayers = otherPlayers.map(p => p[0].name);
 
-const determineDropdownItems = (playerState) => {
-    const menuItemsData = {
-        label: 'Actions',
+    if (playerState.coins >= 10) {
+        let players = otherPlayers.map((element) => ({
+            label: element,
+            callback: (event, item) => sendMessage("/action coup " + element)
+        }));
+        menuItemsData.items.push({
+            label: 'Coup',
+            delay: 300,
+            items: players
+        });
+        return menuItemsData;
+    }
+    menuItemsData.items.push({
+        label: 'Income',
+        callback: (event, item) => sendMessage("/action income")
+    });
+    menuItemsData.items.push({
+        label: 'Foreign aid',
+        callback: (event, item) => sendMessage("/action foreign_aid")
+    });
+    if (playerState.coins >= 7) {
+        let players = otherPlayers.map((element) => ({
+            label: element,
+            callback: (event, item) => sendMessage("/action coup " + element)
+        }));
+        menuItemsData.items.push({
+            label: 'Coup',
+            delay: 300,
+            items: players
+        });
+    }
+    menuItemsData.items.push({
+        label: 'Duke',
+        delay: 300,
         items: [
             {
-                label: 'Income',
-                callback: (event, item) => console.log('Income clicked', event, item),
-            },
+                label: 'Tax',
+                callback: (event, item) => sendMessage("/action tax")
+            }
+        ]
+    });
+    if (playerState.coins >= 3) {
+        let players = otherPlayers.map((element) => ({
+            label: element,
+            callback: (event, item) => sendMessage("/action assassinate " + element)
+        }));
+        menuItemsData.items.push({
+            label: 'Assassin',
+            delay: 300,
+            items: players
+        });
+    }
+    let players = otherPlayers.map((element) => ({
+        label: element,
+        callback: (event, item) => sendMessage("/action steal " + element)
+    }));
+    menuItemsData.items.push({
+        label: 'Captain',
+        delay: 300,
+        items: players
+    });
+    menuItemsData.items.push({
+        label: 'Ambassador',
+        delay: 300,
+        items: [
             {
-                label: 'Foreign aid',
-                callback: (event, item) => console.log('Foreign aid clicked', event, item),
-            },
-            {
-                label: 'Coup',
-                callback: (event, item) => console.log('Foreign aid clicked', event, item),
-                //TODO: extra nested dropdown to select target player
-            },
-            {
-                label: 'Duke',
-                delay: 300,
-                items: [
-                {
-                    label: 'Tax',
-                    callback: (event, item) => console.log('Duke > Tax clicked', event, item),
-                },
-                {
-                    label: 'Block foreign aid',
-                    callback: (event, item) => console.log('Duke > Block foreign aid clicked', event, item),
-                    // disabled: true,
-                },
-                ],
-            },
-            {
-                label: 'Assassin',
-                delay: 300,
-                items: [
-                    {
-                        label: 'Assassinate',
-                        callback: (event, item) => console.log('Assassin > Assassinate clicked', event, item),
-                    },
-                ],
-            },
-            {
-                label: 'Captain',
-                delay: 300,
-                items: [
-                    {
-                        label: 'Steal',
-                        callback: (event, item) => console.log('Captain > Steal clicked', event, item),
-                    },
-                    {
-                        label: 'Block stealing',
-                        callback: (event, item) => console.log('Captain > Block stealing clicked', event, item),
-                    },
-                ],
-            },
-            {
-                label: 'Ambassador',
-                delay: 300,
-                items: [
-                    {
-                        label: 'Exchange',
-                        callback: () => ambassadorExchange(playerState),
-                    },
-                    {
-                        label: 'Block stealing',
-                        callback: (event, item) => console.log('Ambassador > Block stealing clicked', event, item),
-                    },
-                ],
-            },
-            {
-                label: 'Contessa',
-                delay: 300,
-                items: [
-                {
-                    label: 'Block assassination',
-                    callback: (event, item) => console.log('Contessa > Block assassination clicked', event, item),
-                },
-                ],
-            },
-        ],
-    };
+                label: 'Exchange',
+                callback: (event, item) => sendMessage("/action exchange")
+            }
+        ]
+    });
     return menuItemsData;
 }
 
@@ -124,10 +117,10 @@ determineDropdownItems.propTypes = {
     playerState: PropTypes.object.isRequired,
 };
 
-function PlayerCard({ playerState, enableAction }) {
+function PlayerCard({ gameState, playerUuid, playerState, enableAction, sendMessage }) {
     const cardIcon1 = 0 in playerState.cards ? determineCardIcon(playerState.cards[0]) : backsideImage;
     const cardIcon2 = 1 in playerState.cards ? determineCardIcon(playerState.cards[1]) : backsideImage;
-    const menuItemsData = determineDropdownItems(playerState);
+    const menuItemsData = determineDropdownItems(gameState, playerUuid, playerState, enableAction, sendMessage);
 
     return(
        <Box display="flex" justifyContent="center">
@@ -143,7 +136,7 @@ function PlayerCard({ playerState, enableAction }) {
                     menuItemsData={menuItemsData}
                     MenuProps={{elevation: 3}}
                     ButtonProps={{variant: 'contained'}}
-                    onClick={() => console.log('Clicked')}
+                    // onClick={() => console.log('Clicked')}
                 />}
                 </Stack>
                 <Stack direction="column" alignItems="center" spacing="20px">
@@ -164,7 +157,11 @@ function PlayerCard({ playerState, enableAction }) {
 }
 
 PlayerCard.propTypes = {
+    gameState: PropTypes.object.isRequired,
+    playerUuid: PropTypes.string.isRequired,
     playerState: PropTypes.object.isRequired,
+    enableAction: PropTypes.bool.isRequired,
+    sendMessage: PropTypes.func.isRequired
 };
 
 export default PlayerCard;

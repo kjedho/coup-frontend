@@ -2,10 +2,10 @@ import { Grid } from "@mui/material";
 import PlayerCard from "./PlayerCard";
 import PropTypes from "prop-types";
 
-function PlayerLayout({ gameState }) {
+function PlayerLayout({ playerUuid, gameState, sendMessage }) {
     const playerCards = gameState.players.map((player, index) => 
         <Grid item sm={4} key={index}>
-            <PlayerCard playerState={player[0]} enableAction={player[1]} />
+            <PlayerCard gameState={gameState} playerUuid={playerUuid} playerState={player[0]} enableAction={player[1]} sendMessage={sendMessage} />
         </Grid>
     );
     return(
@@ -16,7 +16,9 @@ function PlayerLayout({ gameState }) {
 }
 
 PlayerLayout.propTypes = {
-    gameState: PropTypes.object.isRequired
+    playerUuid: PropTypes.string.isRequired,
+    gameState: PropTypes.object.isRequired,
+    sendMessage: PropTypes.func.isRequired
 };
 
 export default PlayerLayout;
