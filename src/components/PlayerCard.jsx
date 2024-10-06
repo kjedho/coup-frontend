@@ -88,7 +88,7 @@ const determineDropdownItems = (gameState, playerUuid, playerState, enableAction
         menuItemsData.items.push({
             label: 'Assassin',
             delay: 300,
-            items: players
+            items: [{label: 'Assassinate', items: players}]
         });
     }
     let players = otherPlayers.map((element) => ({
@@ -98,7 +98,7 @@ const determineDropdownItems = (gameState, playerUuid, playerState, enableAction
     menuItemsData.items.push({
         label: 'Captain',
         delay: 300,
-        items: players
+        items: [{label: 'Steal', items: players}]
     });
     menuItemsData.items.push({
         label: 'Ambassador',

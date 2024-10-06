@@ -26,7 +26,7 @@ function joinLobby(name, uuid, sendMessage, navigate) {
 
 function Creation({ sendMessage }) {
     const [name, setName] = useState("");
-    const [numberOfPlayers, setNumberOfPlayers] = useState(2);
+    const [numberOfPlayers, setNumberOfPlayers] = useState(6);
     const [uuid, setUuid] = useState("");
     const columnWidth = "15vw";
     const createButtonEnabled = 1 < numberOfPlayers && numberOfPlayers < 7 && validName(name);
@@ -40,20 +40,19 @@ function Creation({ sendMessage }) {
                 alt="Coup"
                 height="400vh"
             />
-            <Stack direction="column" alignItems="center" justifyContent="space-evenly" height="45vh" >
+            <Stack direction="column" alignItems="center" justifyContent="space-evenly" height="40vh" >
                 <TextField
                     label="Enter your name"
                     variant="outlined"
                     sx={{
                         width: columnWidth,
-                        marginBottom: "4vh" 
                     }}
                     error={!validName(name)}
                     helperText={validName(name) ? "" : "Name must be 4-16 characters long and contain only letters and numbers."}
                     onChange={(event) => setName(event.target.value)}
                 />
                 <Box>
-                    <Stack direction="row" alignItems="center" >
+                    {/* <Stack direction="row" alignItems="center" >
                         <FormControl variant="filled">
                             <InputLabel id="number-of-players-label">Pick number of players</InputLabel>
                             <Select
@@ -73,7 +72,7 @@ function Creation({ sendMessage }) {
                                 <MenuItem value={6}>Six</MenuItem>
                             </Select>
                         </FormControl>
-                    </Stack>
+                    </Stack> */}
                     <Button 
                         variant="contained"
                         disabled={!createButtonEnabled}
