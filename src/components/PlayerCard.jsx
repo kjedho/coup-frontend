@@ -1,6 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { NestedDropdown } from 'mui-nested-menu';
+import AmbassadorDialog from "./AmbassadorDialog";
 
 import dukeImage from "../assets/duke.png";
 import assassinImage from "../assets/assassin.png";
@@ -9,6 +10,7 @@ import ambassadorImage from "../assets/ambassador.png";
 import contessaImage from "../assets/contessa.png";
 import backsideImage from "../assets/backside.png";
 import coinImage from "../assets/coin.png";
+import { Fragment } from "react";
 
 const determineCardIcon = (card) => {
     switch(card.role) {
@@ -106,7 +108,7 @@ const determineDropdownItems = (gameState, playerUuid, playerState, enableAction
         items: [
             {
                 label: 'Exchange',
-                callback: (event, item) => sendMessage("/action exchange")
+                callback: (event, item) => sendMessage("/action exchange_draw")
             }
         ]
     });
@@ -121,37 +123,41 @@ function PlayerCard({ gameState, playerUuid, playerState, enableAction, sendMess
     const cardIcon1 = 0 in playerState.cards ? determineCardIcon(playerState.cards[0]) : backsideImage;
     const cardIcon2 = 1 in playerState.cards ? determineCardIcon(playerState.cards[1]) : backsideImage;
     const menuItemsData = determineDropdownItems(gameState, playerUuid, playerState, enableAction, sendMessage);
+    const showAmbassadorDialog = playerState.exchange_cards.length > 0;
 
     return(
        <Box display="flex" justifyContent="center">
-            <Stack direction="row" alignItems="center" spacing="20px">
-                <Stack direction="column" alignItems="center" spacing="20px">
-                    <Stack direction="row" alignItems="center" spacing="20px">
-                        <Typography variant="h6">
-                            {playerState.coins} x
+            <Fragment>
+                <Stack direction="row" alignItems="center" spacing="20px">
+                    <Stack direction="column" alignItems="center" spacing="20px">
+                        <Stack direction="row" alignItems="center" spacing="20px">
+                            <Typography variant="h6">
+                                {playerState.coins} x
+                            </Typography>
+                            <img src={coinImage} height="50px" />
+                        </Stack>
+                    {enableAction && <NestedDropdown
+                        menuItemsData={menuItemsData}
+                        MenuProps={{elevation: 3}}
+                        ButtonProps={{variant: 'contained'}}
+                        // onClick={() => console.log('Clicked')}
+                    />}
+                    </Stack>
+                    <Stack direction="column" alignItems="center" spacing="20px">
+                        <Typography variant="h5">
+                            {playerState.name}
                         </Typography>
-                        <img src={coinImage} height="50px" />
+                        <Stack direction="row" spacing="20px">
+                            {cardIcon1 && <img src={cardIcon1} height="200px" />}
+                            {cardIcon2 && <img src={cardIcon2} height="200px" />}
+                        </Stack>
+                        {/* <Box sx={{ width: '100%' }}>
+                            {playerState.loading != 0 && <LinearProgress variant="determinate" value={playerState.loading} />}
+                        </Box> */}
                     </Stack>
-                {enableAction && <NestedDropdown
-                    menuItemsData={menuItemsData}
-                    MenuProps={{elevation: 3}}
-                    ButtonProps={{variant: 'contained'}}
-                    // onClick={() => console.log('Clicked')}
-                />}
                 </Stack>
-                <Stack direction="column" alignItems="center" spacing="20px">
-                    <Typography variant="h5">
-                        {playerState.name}
-                    </Typography>
-                    <Stack direction="row" spacing="20px">
-                        {cardIcon1 && <img src={cardIcon1} height="200px" />}
-                        {cardIcon2 && <img src={cardIcon2} height="200px" />}
-                    </Stack>
-                    {/* <Box sx={{ width: '100%' }}>
-                        {playerState.loading != 0 && <LinearProgress variant="determinate" value={playerState.loading} />}
-                    </Box> */}
-                </Stack>
-            </Stack>
+                {showAmbassadorDialog && <AmbassadorDialog cards={playerState.exchange_cards} sendMessage={sendMessage} determineCardIcon={determineCardIcon} />}
+            </Fragment>
        </Box>
     );
 }
