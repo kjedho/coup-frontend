@@ -5,29 +5,26 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 function playerList({ lobbyState }) {
     var playerList = [];
     for (var i = 0; i < lobbyState.players.length; i++) {
         playerList.push({name: lobbyState.players[i], ready: true});
     }
-    for (var j = playerList.length; j < lobbyState.num_players; j++) {
+    for (var j = playerList.length; j < lobbyState.max_players; j++) {
         playerList.push({name: "Player "+(j+1), ready: false});
     }
     return playerList;
 }
 
-function startGame(sessionUUID, sendMessage, navigate) {
+function startGame(sessionUUID, sendMessage) {
     sendMessage("/start_game " + sessionUUID);
-    navigate("/game");
 }
 
 function Lobby({ lobbyState, sendMessage }) {
     const theme = useTheme();
     const primary = theme.palette.primary.main;
     const [showAlert, setAlert] = useState(false);
-    const navigate = useNavigate();
     const players = playerList({lobbyState});
 
     return (
@@ -51,7 +48,7 @@ function Lobby({ lobbyState, sendMessage }) {
                         Copy lobby code
                     </Button>
                 </CopyToClipboard>
-                <Button variant="contained" color="primary" size="medium" onClick={() => {startGame(lobbyState.room_uuid, sendMessage, navigate)}}>
+                <Button variant="contained" color="primary" size="medium" onClick={() => {startGame(lobbyState.room_uuid, sendMessage)}}>
                     Start game
                 </Button>
             </Stack>

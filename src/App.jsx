@@ -1,7 +1,7 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Snackbar, Alert, CircularProgress, Box } from "@mui/material";
 
 import LandingPage from "./pages/LandingPage";
 import GamePage from "./pages/GamePage";
@@ -9,52 +9,123 @@ import LobbyPage from "./pages/LobbyPage";
 import { WEBSOCKET_URL } from "./api/constants";
 
 function App() {
-  const {sendMessage, lastMessage, readyState} = useWebSocket(WEBSOCKET_URL);
+  const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL, {
+    shouldReconnect: () => true,
+    reconnectInterval: 3000,
+  });
   const navigate = useNavigate();
 
-  const [lobbyState, setLobbyState] = useState({room_uuid: "", num_players: 2, players: ["Player 1"]});
-  const [gameState, setGameState] = useState({title: "", subtitle: "", players: [], coins: 0, current_player: ""});
-  const [playerUuid, setPlayerUuid] = useState("");
+  const [lobbyState, setLobbyState] = useState({ room_uuid: "", max_players: 2, players: [] });
+  const [gameState, setGameState] = useState({ title: "", subtitle: "", players: [], coins: 0, current_player: "", available_actions: [] });
+  const [error, setError] = useState(null);
+  const [loseInfluenceCards, setLoseInfluenceCards] = useState(null);
+  const [gameOverWinner, setGameOverWinner] = useState(null);
+  const [challengePrompt, setChallengePrompt] = useState(null);
+  const [blockPrompt, setBlockPrompt] = useState(null);
+  const [actionResult, setActionResult] = useState(null);
 
   useEffect(() => {
-    if (readyState === ReadyState.CONNECTING) {
-      console.log("Connection state CONNECTING.")
-    } else if (readyState === ReadyState.OPEN) {
-      console.log("Connection state OPEN.")
-    } else if (readyState === ReadyState.CLOSING) {
-      console.log("Connection state CLOSING.")
-    } else if (readyState === ReadyState.CLOSED) {
-      console.log("Connection state CLOSED.")
-    }
-  }, [readyState])
-
-  useEffect(() => {
-    if (!lastMessage) {
-      return;
-    }
+    if (!lastMessage) return;
     try {
-      const message = JSON.parse(lastMessage.data);      
-      console.log(`Parsed message: ${JSON.stringify(message)}`);
-      if ("num_players" in message) {
-        setLobbyState(message);
-      } else if ("coins" in message) {
-        setGameState(message);
-        navigate("/game");
-      } else if ("player_uuid" in message) {
-        setPlayerUuid(message.player_uuid);
+      const msg = JSON.parse(lastMessage.data);
+      console.log("Received:", msg);
+
+      switch (msg.type) {
+        case "connected":
+          break;
+        case "lobby_state":
+          setLobbyState(msg);
+          break;
+        case "game_state":
+          setGameState(msg);
+          setLoseInfluenceCards(null);
+          setChallengePrompt(null);
+          setBlockPrompt(null);
+          if (window.location.pathname !== "/game") {
+            navigate("/game");
+          }
+          break;
+        case "error":
+          setError(msg.message);
+          break;
+        case "game_over":
+          setGameOverWinner(msg.winner);
+          setChallengePrompt(null);
+          setBlockPrompt(null);
+          break;
+        case "lose_influence_choice":
+          setLoseInfluenceCards(msg.cards);
+          setChallengePrompt(null);
+          setBlockPrompt(null);
+          break;
+        case "challenge_prompt":
+        case "block_challenge_prompt":
+          setChallengePrompt(msg);
+          setBlockPrompt(null);
+          break;
+        case "block_prompt":
+          setBlockPrompt(msg);
+          setChallengePrompt(null);
+          break;
+        case "action_result":
+          setActionResult(msg.message);
+          break;
+        default:
+          console.log("Unknown message type:", msg.type);
       }
-    } catch (error) {
-      console.log(lastMessage.data);  
+    } catch (e) {
+      console.log("Non-JSON message:", lastMessage.data);
     }
-  }, [lastMessage])
+  }, [lastMessage, navigate]);
+
+  if (readyState !== ReadyState.OPEN) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <>
-    <Routes>
-      <Route path="/" element={<LandingPage sendMessage={sendMessage}/>} />
-      <Route path="/lobby" element={<LobbyPage lobbyState={lobbyState} sendMessage={sendMessage}/>} />
-      <Route path="/game" element={<GamePage playerUuid={playerUuid} gameState={gameState} sendMessage={sendMessage}/>} />
-    </Routes>
+      <Routes>
+        <Route path="/" element={<LandingPage sendMessage={sendMessage} />} />
+        <Route path="/lobby" element={<LobbyPage lobbyState={lobbyState} sendMessage={sendMessage} />} />
+        <Route path="/game" element={
+          <GamePage
+            gameState={gameState}
+            sendMessage={sendMessage}
+            loseInfluenceCards={loseInfluenceCards}
+            setLoseInfluenceCards={setLoseInfluenceCards}
+            gameOverWinner={gameOverWinner}
+            setGameOverWinner={setGameOverWinner}
+            challengePrompt={challengePrompt}
+            setChallengePrompt={setChallengePrompt}
+            blockPrompt={blockPrompt}
+            setBlockPrompt={setBlockPrompt}
+          />
+        } />
+      </Routes>
+      <Snackbar
+        open={error !== null}
+        autoHideDuration={4000}
+        onClose={() => setError(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={() => setError(null)} severity="error" variant="filled">
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={actionResult !== null}
+        autoHideDuration={5000}
+        onClose={() => setActionResult(null)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={() => setActionResult(null)} severity="info" variant="filled">
+          {actionResult}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
