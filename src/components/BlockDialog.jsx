@@ -6,16 +6,33 @@ import {
     Button,
     Typography,
     Stack,
+    LinearProgress,
 } from "@mui/material";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 function BlockDialog({ prompt, sendMessage, onClose }) {
+    const deadlineMs = (prompt.deadline_secs || 10) * 1000;
+    const [progress, setProgress] = useState(100);
+
+    useEffect(() => {
+        const start = Date.now();
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - start;
+            const remaining = Math.max(0, 100 - (elapsed / deadlineMs) * 100);
+            setProgress(remaining);
+            if (remaining <= 0) clearInterval(interval);
+        }, 100);
+        return () => clearInterval(interval);
+    }, [deadlineMs]);
+
     const description = prompt.target
         ? `${prompt.actor} wants to ${prompt.action} ${prompt.target}.`
         : `${prompt.actor} wants to ${prompt.action}.`;
 
     return (
         <Dialog open={true} maxWidth="xs" fullWidth>
+            <LinearProgress variant="determinate" value={progress} />
             <DialogTitle>Block the action?</DialogTitle>
             <DialogContent>
                 <Typography>{description}</Typography>
@@ -23,6 +40,8 @@ function BlockDialog({ prompt, sendMessage, onClose }) {
             <DialogActions>
                 <Stack direction="row" spacing={1} sx={{ width: "100%", justifyContent: "flex-end" }}>
                     <Button
+                        variant="contained"
+                        color="success"
                         onClick={() => {
                             sendMessage("/allow");
                             onClose();
@@ -34,7 +53,7 @@ function BlockDialog({ prompt, sendMessage, onClose }) {
                         <Button
                             key={role}
                             variant="contained"
-                            color="warning"
+                            color="error"
                             onClick={() => {
                                 sendMessage("/block " + role);
                                 onClose();

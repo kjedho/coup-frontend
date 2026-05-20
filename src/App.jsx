@@ -35,6 +35,11 @@ function App() {
           break;
         case "lobby_state":
           setLobbyState(msg);
+          setGameState({ title: "", subtitle: "", players: [], coins: 0, current_player: "", available_actions: [] });
+          setGameOverWinner(null);
+          setLoseInfluenceCards(null);
+          setChallengePrompt(null);
+          setBlockPrompt(null);
           if (window.location.pathname !== "/lobby") {
             navigate("/lobby");
           }

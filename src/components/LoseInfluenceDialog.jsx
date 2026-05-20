@@ -36,7 +36,7 @@ function LoseInfluenceDialog({ cards, sendMessage, onClose }) {
                                         src={determineCardIcon(card)}
                                         height="150px"
                                     />
-                                    <Typography variant="body1">
+                                    <Typography variant="body1" color="white">
                                         {card.role}
                                     </Typography>
                                 </Stack>
