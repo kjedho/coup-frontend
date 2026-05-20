@@ -24,8 +24,8 @@ function GameOverDialog({ winner, onClose }) {
                 <Button
                     variant="contained"
                     onClick={() => {
-                        onClose();
                         navigate("/");
+                        onClose();
                     }}
                 >
                     Back to Home

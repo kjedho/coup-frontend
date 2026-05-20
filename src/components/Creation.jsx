@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import {
     Stack,
@@ -24,14 +23,12 @@ function validUuidV4(uuid) {
     return re.test(uuid);
 }
 
-function createAndJoinLobby(name, numberOfPlayers, sendMessage, navigate) {
+function createAndJoinLobby(name, numberOfPlayers, sendMessage) {
     sendMessage("/create_lobby " + numberOfPlayers + " " + name);
-    navigate("/lobby");
 }
 
-function joinLobby(name, uuid, sendMessage, navigate) {
+function joinLobby(name, uuid, sendMessage) {
     sendMessage("/join_lobby " + uuid + " " + name);
-    navigate("/lobby");
 }
 
 function Creation({ sendMessage }) {
@@ -42,8 +39,6 @@ function Creation({ sendMessage }) {
     const createButtonEnabled =
         1 < numberOfPlayers && numberOfPlayers < 7 && validName(name);
     const joinButtonEnabled = validName(name) && validUuidV4(uuid);
-    const navigate = useNavigate();
-
     return (
         <Stack
             direction="row"
@@ -105,8 +100,7 @@ function Creation({ sendMessage }) {
                     createAndJoinLobby(
                         name,
                         numberOfPlayers,
-                        sendMessage,
-                        navigate
+                        sendMessage
                     )
                 }
             >
@@ -133,7 +127,7 @@ function Creation({ sendMessage }) {
                     disabled={!joinButtonEnabled}
                     sx={{ width: columnWidth }}
                     onClick={() =>
-                        joinLobby(name, uuid, sendMessage, navigate)
+                        joinLobby(name, uuid, sendMessage)
                     }
                 >
                     Join private lobby

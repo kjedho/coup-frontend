@@ -35,13 +35,16 @@ function App() {
           break;
         case "lobby_state":
           setLobbyState(msg);
+          if (window.location.pathname !== "/lobby") {
+            navigate("/lobby");
+          }
           break;
         case "game_state":
           setGameState(msg);
           setLoseInfluenceCards(null);
           setChallengePrompt(null);
           setBlockPrompt(null);
-          if (window.location.pathname !== "/game") {
+          if (window.location.pathname === "/lobby") {
             navigate("/game");
           }
           break;

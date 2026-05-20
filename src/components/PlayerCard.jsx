@@ -127,14 +127,10 @@ const buildDropdownItems = (availableActions, sendMessage) => {
 
 function PlayerCard({ gameState, playerState, sendMessage }) {
     const enableAction = playerState.is_self && playerState.is_current_turn;
-    const cardIcon1 =
-        playerState.cards.length > 0
-            ? determineCardIcon(playerState.cards[0])
-            : backsideImage;
-    const cardIcon2 =
-        playerState.cards.length > 1
-            ? determineCardIcon(playerState.cards[1])
-            : backsideImage;
+    const cards = playerState.cards.map((card) => ({
+        icon: determineCardIcon(card),
+        lost: card.visible,
+    }));
     const menuItemsData = buildDropdownItems(
         gameState.available_actions,
         sendMessage
@@ -204,12 +200,17 @@ function PlayerCard({ gameState, playerState, sendMessage }) {
                             {isDead && " (eliminated)"}
                         </Typography>
                         <Stack direction="row" spacing="20px">
-                            {cardIcon1 && (
-                                <img src={cardIcon1} height="200px" />
-                            )}
-                            {cardIcon2 && (
-                                <img src={cardIcon2} height="200px" />
-                            )}
+                            {cards.map((card, index) => (
+                                <img
+                                    key={index}
+                                    src={card.icon}
+                                    height="200px"
+                                    style={card.lost ? {
+                                        filter: "grayscale(100%)",
+                                        opacity: 0.5,
+                                    } : undefined}
+                                />
+                            ))}
                         </Stack>
                     </Stack>
                 </Stack>
