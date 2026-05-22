@@ -7,8 +7,11 @@ import LandingPage from "./pages/LandingPage";
 import GamePage from "./pages/GamePage";
 import LobbyPage from "./pages/LobbyPage";
 import { WEBSOCKET_URL } from "./api/constants";
+import { usePageTracking, GameEvents } from "./hooks/useAnalytics";
 
 function App() {
+  // Track page views
+  usePageTracking();
   const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL, {
     shouldReconnect: () => true,
     reconnectInterval: 3000,
@@ -44,6 +47,7 @@ function App() {
           setBlockPrompt(null);
           if (window.location.pathname !== "/lobby") {
             navigate("/lobby");
+            GameEvents.lobbyJoined();
           }
           break;
         case "game_state":
@@ -53,6 +57,7 @@ function App() {
           setBlockPrompt(null);
           if (window.location.pathname === "/lobby") {
             navigate("/game");
+            GameEvents.gameStarted(msg.players?.length || 0);
           }
           break;
         case "error":
@@ -62,6 +67,7 @@ function App() {
           setGameOverWinner(msg.winner);
           setChallengePrompt(null);
           setBlockPrompt(null);
+          GameEvents.gameEnded(msg.winner);
           break;
         case "lose_influence_choice":
           setLoseInfluenceCards(msg.cards);
