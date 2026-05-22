@@ -1,12 +1,13 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Snackbar, Alert, CircularProgress, Box } from "@mui/material";
 
 import LandingPage from "./pages/LandingPage";
 import GamePage from "./pages/GamePage";
 import LobbyPage from "./pages/LobbyPage";
 import { WEBSOCKET_URL } from "./api/constants";
+import useWebRTC from "./hooks/useWebRTC";
 
 function App() {
   const { sendMessage, lastMessage, readyState } = useWebSocket(WEBSOCKET_URL, {
@@ -25,6 +26,9 @@ function App() {
   const [blockPrompt, setBlockPrompt] = useState(null);
   const [actionResult, setActionResult] = useState(null);
 
+  const { localStream, remoteStreams, cameraEnabled, toggleCamera, startConnections, handleSignal, cleanup: cleanupWebRTC } = useWebRTC(sendMessage, playerUuid);
+  const hasStartedWebRTC = useRef(false);
+
   useEffect(() => {
     if (!lastMessage) return;
     try {
@@ -42,6 +46,8 @@ function App() {
           setLoseInfluenceCards(null);
           setChallengePrompt(null);
           setBlockPrompt(null);
+          cleanupWebRTC();
+          hasStartedWebRTC.current = false;
           if (window.location.pathname !== "/lobby") {
             navigate("/lobby");
           }
@@ -51,9 +57,21 @@ function App() {
           setLoseInfluenceCards(null);
           setChallengePrompt(null);
           setBlockPrompt(null);
+          if (!hasStartedWebRTC.current && msg.players) {
+            const peerUuids = msg.players
+              .filter(p => !p.is_self)
+              .map(p => p.uuid);
+            if (peerUuids.length > 0) {
+              startConnections(peerUuids);
+              hasStartedWebRTC.current = true;
+            }
+          }
           if (window.location.pathname === "/lobby") {
             navigate("/game");
           }
+          break;
+        case "signal":
+          handleSignal(msg.from_uuid, msg.payload);
           break;
         case "error":
           setError(msg.message);
@@ -113,6 +131,10 @@ function App() {
             setChallengePrompt={setChallengePrompt}
             blockPrompt={blockPrompt}
             setBlockPrompt={setBlockPrompt}
+            localStream={localStream}
+            remoteStreams={remoteStreams}
+            cameraEnabled={cameraEnabled}
+            toggleCamera={toggleCamera}
           />
         } />
       </Routes>

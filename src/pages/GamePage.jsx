@@ -19,6 +19,10 @@ function GamePage({
     setChallengePrompt,
     blockPrompt,
     setBlockPrompt,
+    localStream,
+    remoteStreams,
+    cameraEnabled,
+    toggleCamera,
 }) {
     return (
         <Container maxWidth="xl">
@@ -36,7 +40,14 @@ function GamePage({
                 title={gameState.title}
                 subtitle={gameState.subtitle}
             />
-            <PlayerLayout gameState={gameState} sendMessage={sendMessage} />
+            <PlayerLayout
+                gameState={gameState}
+                sendMessage={sendMessage}
+                localStream={localStream}
+                remoteStreams={remoteStreams}
+                cameraEnabled={cameraEnabled}
+                toggleCamera={toggleCamera}
+            />
             <Footer />
             {loseInfluenceCards && (
                 <LoseInfluenceDialog
@@ -81,6 +92,10 @@ GamePage.propTypes = {
     setChallengePrompt: PropTypes.func.isRequired,
     blockPrompt: PropTypes.object,
     setBlockPrompt: PropTypes.func.isRequired,
+    localStream: PropTypes.object,
+    remoteStreams: PropTypes.object,
+    cameraEnabled: PropTypes.bool,
+    toggleCamera: PropTypes.func,
 };
 
 export default GamePage;

@@ -2,6 +2,7 @@ import { Box, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import PropTypes from "prop-types";
 import { NestedDropdown } from "mui-nested-menu";
 import AmbassadorDialog from "./AmbassadorDialog";
+import VideoOverlay from "./VideoOverlay";
 
 import dukeImage from "../assets/duke.png";
 import assassinImage from "../assets/assassin.png";
@@ -125,7 +126,7 @@ const buildDropdownItems = (availableActions, sendMessage) => {
     return menuItemsData;
 };
 
-function PlayerCard({ gameState, playerState, sendMessage }) {
+function PlayerCard({ gameState, playerState, sendMessage, videoStream, cameraEnabled, toggleCamera }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const enableAction = playerState.is_self && playerState.is_current_turn;
@@ -203,6 +204,13 @@ function PlayerCard({ gameState, playerState, sendMessage }) {
                         alignItems="center"
                         spacing={spacing}
                     >
+                        <VideoOverlay
+                            stream={videoStream}
+                            isSelf={playerState.is_self}
+                            cameraEnabled={cameraEnabled}
+                            toggleCamera={toggleCamera}
+                            isMobile={isMobile}
+                        />
                         <Typography
                             variant={isMobile ? "body1" : "h5"}
                             sx={{
@@ -252,6 +260,9 @@ PlayerCard.propTypes = {
     gameState: PropTypes.object.isRequired,
     playerState: PropTypes.object.isRequired,
     sendMessage: PropTypes.func.isRequired,
+    videoStream: PropTypes.object,
+    cameraEnabled: PropTypes.bool,
+    toggleCamera: PropTypes.func,
 };
 
 export default PlayerCard;
