@@ -5,6 +5,10 @@ import './index.css'
 import { ThemeProvider } from '@emotion/react'
 import { createTheme } from '@mui/material'
 import { BrowserRouter } from 'react-router-dom'
+import { initGA } from './hooks/useAnalytics'
+
+// Initialize Google Analytics (if configured)
+initGA();
 
 const theme = createTheme({
   palette: {
