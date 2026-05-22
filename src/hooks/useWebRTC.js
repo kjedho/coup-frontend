@@ -1,10 +1,11 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import SimplePeer from "simple-peer";
 
-const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
+const ICE_CONFIG = {
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+};
 
 export default function useWebRTC(sendMessage, playerUuid) {
-    const peersRef = useRef(new Map());
+    const peersRef = useRef(new Map()); // uuid -> RTCPeerConnection
     const localStreamRef = useRef(null);
     const signalQueueRef = useRef([]);
     const readyRef = useRef(false);
@@ -27,71 +28,102 @@ export default function useWebRTC(sendMessage, playerUuid) {
 
     const createPeer = useCallback(
         (peerUuid, initiator, stream) => {
-            // Don't create a duplicate peer
             const existing = peersRef.current.get(peerUuid);
-            if (existing && !existing.destroyed) {
+            if (existing) {
                 return existing;
             }
 
-            const peer = new SimplePeer({
-                initiator,
-                stream: stream || undefined,
-                trickle: true,
-                config: { iceServers: ICE_SERVERS },
-            });
+            const pc = new RTCPeerConnection(ICE_CONFIG);
 
-            peer.on("signal", (data) => {
-                sendSignal(peerUuid, data);
-            });
+            // Add local tracks
+            if (stream) {
+                stream.getTracks().forEach((track) => {
+                    pc.addTrack(track, stream);
+                });
+            }
 
-            peer.on("stream", (remoteStream) => {
+            // Collect remote tracks into a stream
+            const remoteStream = new MediaStream();
+            pc.ontrack = (event) => {
+                remoteStream.addTrack(event.track);
                 setRemoteStreams((prev) => {
                     const next = new Map(prev);
                     next.set(peerUuid, remoteStream);
                     return next;
                 });
-            });
+            };
 
-            peer.on("close", () => {
-                peersRef.current.delete(peerUuid);
-                setRemoteStreams((prev) => {
-                    const next = new Map(prev);
-                    next.delete(peerUuid);
-                    return next;
-                });
-            });
+            // Send ICE candidates
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    sendSignal(peerUuid, {
+                        type: "candidate",
+                        candidate: event.candidate,
+                    });
+                }
+            };
 
-            peer.on("error", (err) => {
-                console.warn("WebRTC peer error with", peerUuid, err);
-                peersRef.current.delete(peerUuid);
-                setRemoteStreams((prev) => {
-                    const next = new Map(prev);
-                    next.delete(peerUuid);
-                    return next;
-                });
-            });
+            pc.onconnectionstatechange = () => {
+                if (pc.connectionState === "failed" || pc.connectionState === "closed") {
+                    peersRef.current.delete(peerUuid);
+                    setRemoteStreams((prev) => {
+                        const next = new Map(prev);
+                        next.delete(peerUuid);
+                        return next;
+                    });
+                }
+            };
 
-            peersRef.current.set(peerUuid, peer);
-            return peer;
+            peersRef.current.set(peerUuid, pc);
+
+            // If initiator, create and send offer
+            if (initiator) {
+                pc.createOffer()
+                    .then((offer) => pc.setLocalDescription(offer))
+                    .then(() => {
+                        sendSignal(peerUuid, {
+                            type: "offer",
+                            sdp: pc.localDescription,
+                        });
+                    })
+                    .catch((err) => console.warn("[WebRTC] offer error:", err));
+            }
+
+            return pc;
         },
         [sendSignal]
     );
 
     const processSignal = useCallback(
-        (fromUuid, signalData) => {
-            let peer = peersRef.current.get(fromUuid);
-            if (!peer || peer.destroyed) {
-                // Received a signal from a peer we haven't created yet (they initiated)
-                peer = createPeer(fromUuid, false, localStreamRef.current);
-            }
+        async (fromUuid, signalData) => {
+            let pc = peersRef.current.get(fromUuid);
 
-            try {
-                peer.signal(signalData);
-            } catch (err) {
-                console.warn("Error signaling peer", fromUuid, err);
+            if (signalData.type === "offer") {
+                if (!pc) {
+                    pc = createPeer(fromUuid, false, localStreamRef.current);
+                }
+                await pc.setRemoteDescription(new RTCSessionDescription(signalData.sdp));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                sendSignal(fromUuid, {
+                    type: "answer",
+                    sdp: pc.localDescription,
+                });
+            } else if (signalData.type === "answer") {
+                if (pc) {
+                    await pc.setRemoteDescription(new RTCSessionDescription(signalData.sdp));
+                }
+            } else if (signalData.type === "candidate") {
+                if (pc) {
+                    try {
+                        await pc.addIceCandidate(new RTCIceCandidate(signalData.candidate));
+                    } catch (_) {
+                        // ignore late ICE candidates
+                    }
+                }
             }
         },
-        [createPeer]
+        [createPeer, sendSignal]
     );
 
     const startConnections = useCallback(
@@ -139,7 +171,6 @@ export default function useWebRTC(sendMessage, playerUuid) {
             if (!signalData) return;
 
             if (!readyRef.current) {
-                // Buffer signals until startConnections has completed
                 signalQueueRef.current.push({ fromUuid, signalData });
                 return;
             }
@@ -161,9 +192,9 @@ export default function useWebRTC(sendMessage, playerUuid) {
     }, []);
 
     const cleanup = useCallback(() => {
-        peersRef.current.forEach((peer) => {
+        peersRef.current.forEach((pc) => {
             try {
-                peer.destroy();
+                pc.close();
             } catch (_) {
                 // ignore
             }
