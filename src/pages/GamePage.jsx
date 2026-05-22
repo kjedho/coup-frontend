@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import PropTypes from "prop-types";
 import Header from "../components/Header";
 import PlayerLayout from "../components/PlayerLayout";
@@ -21,14 +21,15 @@ function GamePage({
     setBlockPrompt,
 }) {
     return (
+        <Container maxWidth="xl">
         <Box
             sx={{
                 flexDirection: "column",
                 display: "flex",
                 minHeight: "90vh",
                 justifyContent: "space-evenly",
-                marginLeft: "auto",
-                marginRight: "auto",
+                py: { xs: 1, sm: 2 },
+                px: { xs: 0.5, sm: 2 },
             }}
         >
             <Header
@@ -65,6 +66,7 @@ function GamePage({
                 />
             )}
         </Box>
+        </Container>
     );
 }
 

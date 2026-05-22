@@ -1,8 +1,49 @@
-# React + Vite
+# Coup Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + Vite frontend for the Coup card game.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+npm run dev
+```
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_BACKEND_URL` | Backend API URL | `http://localhost:8080` |
+| `VITE_WEBSOCKET_URL` | WebSocket URL (optional, derived from BACKEND_URL if not set) | `ws://localhost:8080/ws` |
+
+### Example `.env` file
+
+```env
+VITE_BACKEND_URL=https://backend.coup.example.com
+VITE_WEBSOCKET_URL=wss://backend.coup.example.com/ws
+```
+
+## Production Build
+
+```bash
+npm run build
+```
+
+The built files will be in `dist/`. Serve with any static file server (nginx, etc).
+
+### Example nginx config
+
+```nginx
+server {
+    server_name coup.example.com;
+    root /path/to/coup-frontend/dist;
+    
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+## Mobile Support
+
+The UI is responsive and works on mobile devices.

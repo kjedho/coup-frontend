@@ -1,5 +1,5 @@
 
-import { Container, Stack, Button, Typography, Alert } from '@mui/material';
+import { Container, Stack, Button, Typography, Alert, useMediaQuery, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
@@ -24,36 +24,64 @@ function startGame(sessionUUID, sendMessage) {
 function Lobby({ lobbyState, sendMessage }) {
     const theme = useTheme();
     const primary = theme.palette.primary.main;
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [showAlert, setAlert] = useState(false);
     const players = playerList({lobbyState});
 
     return (
-        <Container sx={{ border: '4px '+primary+' solid', borderRadius: '10px', width: '475px', padding: '30px' }} >
-            <Stack  spacing={3}>
-                <Typography variant="h4" textAlign="center">
+        <Box sx={{ 
+            border: '4px '+primary+' solid', 
+            borderRadius: '10px', 
+            width: isMobile ? '95vw' : '475px',
+            maxWidth: '475px',
+            mx: 'auto',
+            p: { xs: 2, sm: 3 }
+        }}>
+            <Stack spacing={2}>
+                <Typography variant={isMobile ? "h5" : "h4"} textAlign="center">
                     Players in the lobby
                 </Typography>
                 {players.map((player, index) => (
-                    <Stack key={index} direction="row" justifyContent="center" spacing={5}>
-                        <Typography variant="h5" textAlign="center" width="200px">
+                    <Stack 
+                        key={index} 
+                        direction="row" 
+                        justifyContent="space-between" 
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ px: 1 }}
+                    >
+                        <Typography 
+                            variant={isMobile ? "body1" : "h6"} 
+                            sx={{ 
+                                flex: 1,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
                             {player.name}
                         </Typography>
-                        <Button variant="contained" color={player.ready ? "success" : "error"} sx={{ width: "100px" }} >
+                        <Button 
+                            variant="contained" 
+                            color={player.ready ? "success" : "error"} 
+                            size={isMobile ? "small" : "medium"}
+                            sx={{ minWidth: isMobile ? "70px" : "100px", flexShrink: 0 }} 
+                        >
                             {player.ready ? "Joined" : "Waiting"}
                         </Button>
                     </Stack>
                 ))}
                 <CopyToClipboard text={ lobbyState.room_uuid } >
-                    <Button variant="outlined" color="primary" size="medium" onClick={() => {setAlert(true)}}>
+                    <Button variant="outlined" color="primary" size="medium" fullWidth onClick={() => {setAlert(true)}}>
                         Copy lobby code
                     </Button>
                 </CopyToClipboard>
-                <Button variant="contained" color="primary" size="medium" onClick={() => {startGame(lobbyState.room_uuid, sendMessage)}}>
+                <Button variant="contained" color="primary" size="medium" fullWidth onClick={() => {startGame(lobbyState.room_uuid, sendMessage)}}>
                     Start game
                 </Button>
             </Stack>
-            {showAlert && <Alert variant="outlined" severity="success" onClose={() => {setAlert(false)}} sx={{ margin: "16px" }}>Lobby code copied to clipboard!</Alert>}
-        </Container>
+            {showAlert && <Alert variant="outlined" severity="success" onClose={() => {setAlert(false)}} sx={{ mt: 2 }}>Copied!</Alert>}
+        </Box>
     );
 }
 

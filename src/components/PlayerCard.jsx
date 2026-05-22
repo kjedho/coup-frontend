@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import PropTypes from "prop-types";
 import { NestedDropdown } from "mui-nested-menu";
 import AmbassadorDialog from "./AmbassadorDialog";
@@ -126,6 +126,8 @@ const buildDropdownItems = (availableActions, sendMessage) => {
 };
 
 function PlayerCard({ gameState, playerState, sendMessage }) {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const enableAction = playerState.is_self && playerState.is_current_turn;
     const cards = playerState.cards.map((card) => ({
         icon: determineCardIcon(card),
@@ -138,6 +140,10 @@ function PlayerCard({ gameState, playerState, sendMessage }) {
     const showAmbassadorDialog =
         playerState.is_self && playerState.exchange_cards.length > 0;
     const isDead = !playerState.is_alive;
+
+    const cardHeight = isMobile ? "100px" : "200px";
+    const coinHeight = isMobile ? "30px" : "50px";
+    const spacing = isMobile ? 1 : 2;
 
     return (
         <Box
@@ -152,63 +158,79 @@ function PlayerCard({ gameState, playerState, sendMessage }) {
                     ? "primary.main"
                     : "transparent",
                 borderRadius: "10px",
-                padding: "10px",
+                p: { xs: 1, sm: 2 },
                 width: "fit-content",
+                maxWidth: "95vw",
                 margin: "0 auto",
             }}
         >
             <Fragment>
-                <Stack direction="row" alignItems="center" spacing="20px">
+                <Stack 
+                    direction={isMobile ? "column" : "row"} 
+                    alignItems="center" 
+                    spacing={spacing}
+                >
                     <Stack
-                        direction="column"
+                        direction={isMobile ? "row" : "column"}
                         alignItems="center"
-                        spacing="20px"
+                        justifyContent="center"
+                        spacing={spacing}
                     >
                         <Stack
                             direction="row"
                             alignItems="center"
-                            spacing="20px"
+                            spacing={1}
                         >
-                            <Typography variant="h6">
+                            <Typography variant={isMobile ? "body1" : "h6"}>
                                 {playerState.coins} x
                             </Typography>
-                            <img src={coinImage} height="50px" />
+                            <img src={coinImage} style={{ height: coinHeight }} alt="coins" />
                         </Stack>
                         {enableAction &&
                             Object.keys(menuItemsData).length > 0 && (
                                 <NestedDropdown
                                     menuItemsData={menuItemsData}
                                     MenuProps={{ elevation: 3 }}
-                                    ButtonProps={{ variant: "contained" }}
+                                    ButtonProps={{ 
+                                        variant: "contained",
+                                        size: isMobile ? "small" : "medium"
+                                    }}
                                 />
                             )}
                     </Stack>
                     <Stack
                         direction="column"
                         alignItems="center"
-                        spacing="20px"
+                        spacing={spacing}
                     >
                         <Typography
-                            variant="h5"
+                            variant={isMobile ? "body1" : "h5"}
                             sx={{
                                 textDecoration: isDead
                                     ? "line-through"
                                     : "none",
+                                textAlign: "center",
+                                wordBreak: "break-word",
+                                maxWidth: "90vw",
                             }}
                         >
                             {playerState.name}
-                            {isDead && " (eliminated)"}
+                            {isDead && " (out)"}
                         </Typography>
-                        <Stack direction="row" spacing="20px">
+                        <Stack direction="row" spacing={isMobile ? 1 : 2}>
                             {cards.map((card, index) => (
-                                <img
+                                <Box
                                     key={index}
+                                    component="img"
                                     src={card.icon}
-                                    height="200px"
-                                    style={card.lost ? {
-                                        filter: "grayscale(100%)",
-                                        opacity: 0.5,
-                                    } : undefined}
+                                    alt="card"
+                                    sx={{
+                                        height: cardHeight,
+                                        maxWidth: isMobile ? "45vw" : "auto",
+                                        objectFit: "contain",
+                                        filter: card.lost ? "grayscale(100%)" : "none",
+                                        opacity: card.lost ? 0.5 : 1,
+                                    }}
                                 />
                             ))}
                         </Stack>
