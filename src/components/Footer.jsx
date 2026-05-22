@@ -4,7 +4,7 @@ function Footer() {
     return(
         <footer>
             <Typography variant="inherit" textAlign="center">
-                &copy; {new Date().getFullYear()} - Coup online - No rights reserved &#x1F609;
+                {new Date().getFullYear()} - Coup online - No rights reserved &#x1F609;
             </Typography>
         </footer>
     );

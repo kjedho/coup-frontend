@@ -15,7 +15,8 @@ function App() {
   });
   const navigate = useNavigate();
 
-  const [lobbyState, setLobbyState] = useState({ room_uuid: "", max_players: 2, players: [] });
+  const [playerUuid, setPlayerUuid] = useState(null);
+  const [lobbyState, setLobbyState] = useState({ room_code: "", max_players: 2, players: [] });
   const [gameState, setGameState] = useState({ title: "", subtitle: "", players: [], coins: 0, current_player: "", available_actions: [] });
   const [error, setError] = useState(null);
   const [loseInfluenceCards, setLoseInfluenceCards] = useState(null);
@@ -32,6 +33,7 @@ function App() {
 
       switch (msg.type) {
         case "connected":
+          setPlayerUuid(msg.player_uuid);
           break;
         case "lobby_state":
           setLobbyState(msg);
@@ -98,7 +100,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<LandingPage sendMessage={sendMessage} />} />
-        <Route path="/lobby" element={<LobbyPage lobbyState={lobbyState} sendMessage={sendMessage} />} />
+        <Route path="/lobby" element={<LobbyPage lobbyState={lobbyState} sendMessage={sendMessage} playerUuid={playerUuid} />} />
         <Route path="/game" element={
           <GamePage
             gameState={gameState}

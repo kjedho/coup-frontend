@@ -18,7 +18,7 @@ function LandingPage({ sendMessage}) {
         padding: '5vh',
       }}
     >
-        <Header title="Welcome to Coup online!" subtitle="The place to be to play Coup privately with friends."/>
+        <Header title="Welcome to Coup online!" subtitle="Play Coup privately with friends"/>
         <Creation sendMessage={sendMessage}/>
         <Footer />
     </Box>

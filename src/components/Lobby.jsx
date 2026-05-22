@@ -21,7 +21,7 @@ function startGame(sessionUUID, sendMessage) {
     sendMessage("/start_game " + sessionUUID);
 }
 
-function Lobby({ lobbyState, sendMessage }) {
+function Lobby({ lobbyState, sendMessage, isCreator }) {
     const theme = useTheme();
     const primary = theme.palette.primary.main;
     const [showAlert, setAlert] = useState(false);
@@ -43,14 +43,16 @@ function Lobby({ lobbyState, sendMessage }) {
                         </Button>
                     </Stack>
                 ))}
-                <CopyToClipboard text={ lobbyState.room_uuid } >
+                <CopyToClipboard text={ lobbyState.room_code } >
                     <Button variant="outlined" color="primary" size="medium" onClick={() => {setAlert(true)}}>
                         Copy lobby code
                     </Button>
                 </CopyToClipboard>
-                <Button variant="contained" color="primary" size="medium" onClick={() => {startGame(lobbyState.room_uuid, sendMessage)}}>
-                    Start game
-                </Button>
+                {isCreator && (
+                    <Button variant="contained" color="primary" size="medium" onClick={() => {startGame(lobbyState.room_code, sendMessage)}}>
+                        Start game
+                    </Button>
+                )}
             </Stack>
             {showAlert && <Alert variant="outlined" severity="success" onClose={() => {setAlert(false)}} sx={{ margin: "16px" }}>Lobby code copied to clipboard!</Alert>}
         </Container>
@@ -59,7 +61,8 @@ function Lobby({ lobbyState, sendMessage }) {
 
 Lobby.propTypes = {
     lobbyState: PropTypes.object.isRequired,
-    sendMessage: PropTypes.func.isRequired
+    sendMessage: PropTypes.func.isRequired,
+    isCreator: PropTypes.bool,
 };
 
 export default Lobby;

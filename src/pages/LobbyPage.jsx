@@ -5,7 +5,7 @@ import Lobby from "../components/Lobby";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
-function LobbyPage({ lobbyState, sendMessage }) {
+function LobbyPage({ lobbyState, sendMessage, playerUuid }) {
   return (
     <Container>
     <Box
@@ -19,7 +19,7 @@ function LobbyPage({ lobbyState, sendMessage }) {
       }}
     >
         <Header title="Welcome to the private Coup lobby" subtitle="Please wait until all players have joined."/>
-        <Lobby lobbyState={lobbyState} sendMessage={sendMessage} />
+        <Lobby lobbyState={lobbyState} sendMessage={sendMessage} isCreator={playerUuid === lobbyState.creator_uuid} />
         <Footer />
     </Box>
     </Container>
@@ -28,7 +28,8 @@ function LobbyPage({ lobbyState, sendMessage }) {
 
 LobbyPage.propTypes = {
   lobbyState: PropTypes.object.isRequired,
-  sendMessage: PropTypes.func.isRequired
+  sendMessage: PropTypes.func.isRequired,
+  playerUuid: PropTypes.string,
 };
 
 export default LobbyPage;

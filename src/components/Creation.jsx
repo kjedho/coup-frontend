@@ -17,28 +17,27 @@ function validName(name) {
     return re.test(name);
 }
 
-function validUuidV4(uuid) {
-    const re =
-        /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-    return re.test(uuid);
+function validRoomCode(code) {
+    const re = /^[A-Za-z0-9]{4}$/;
+    return re.test(code);
 }
 
 function createAndJoinLobby(name, numberOfPlayers, sendMessage) {
     sendMessage("/create_lobby " + numberOfPlayers + " " + name);
 }
 
-function joinLobby(name, uuid, sendMessage) {
-    sendMessage("/join_lobby " + uuid + " " + name);
+function joinLobby(name, roomCode, sendMessage) {
+    sendMessage("/join_lobby " + roomCode.toUpperCase() + " " + name);
 }
 
 function Creation({ sendMessage }) {
     const [name, setName] = useState("");
     const [numberOfPlayers, setNumberOfPlayers] = useState(4);
-    const [uuid, setUuid] = useState("");
+    const [roomCode, setRoomCode] = useState("");
     const columnWidth = "15vw";
     const createButtonEnabled =
         1 < numberOfPlayers && numberOfPlayers < 7 && validName(name);
-    const joinButtonEnabled = validName(name) && validUuidV4(uuid);
+    const joinButtonEnabled = validName(name) && validRoomCode(roomCode);
     return (
         <Stack
             direction="row"
@@ -111,23 +110,24 @@ function Creation({ sendMessage }) {
             </Typography>
             <Stack direction="column" alignItems="center" spacing={1}>
                 <TextField
-                    label="Enter your lobby UUID v4"
+                    label="Enter room code"
                     variant="filled"
                     sx={{ width: columnWidth }}
-                    error={uuid.length > 0 && !validUuidV4(uuid)}
+                    inputProps={{ maxLength: 4, style: { textTransform: "uppercase", letterSpacing: "0.3em", textAlign: "center" } }}
+                    error={roomCode.length > 0 && !validRoomCode(roomCode)}
                     helperText={
-                        uuid.length > 0 && !validUuidV4(uuid)
-                            ? "Invalid UUID v4 format."
+                        roomCode.length > 0 && !validRoomCode(roomCode)
+                            ? "Code must be 4 characters."
                             : ""
                     }
-                    onChange={(event) => setUuid(event.target.value)}
+                    onChange={(event) => setRoomCode(event.target.value)}
                 />
                 <Button
                     variant="contained"
                     disabled={!joinButtonEnabled}
                     sx={{ width: columnWidth }}
                     onClick={() =>
-                        joinLobby(name, uuid, sendMessage)
+                        joinLobby(name, roomCode, sendMessage)
                     }
                 >
                     Join private lobby
