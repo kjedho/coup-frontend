@@ -7,15 +7,15 @@ import Header from "../components/Header";
 
 function LandingPage({ sendMessage}) {
   return (
-    <Container>
+    <Container maxWidth="lg">
     <Box
       sx={{
         flexDirection: 'column',
         display: 'flex',
         minHeight: '90vh',
-        maxWidth: '80vw',
         justifyContent: 'space-between',
-        padding: '5vh',
+        py: { xs: 2, sm: 4 },
+        px: { xs: 1, sm: 2 },
       }}
     >
         <Header title="Welcome to Coup online!" subtitle="Play Coup privately with friends"/>

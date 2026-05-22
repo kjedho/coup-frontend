@@ -9,6 +9,9 @@ import {
     Select,
     MenuItem,
     Typography,
+    useMediaQuery,
+    useTheme,
+    Box,
 } from "@mui/material";
 import coupImage from "../assets/coup.png";
 
@@ -34,43 +37,52 @@ function Creation({ sendMessage }) {
     const [name, setName] = useState("");
     const [numberOfPlayers, setNumberOfPlayers] = useState(4);
     const [roomCode, setRoomCode] = useState("");
-    const columnWidth = "15vw";
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const columnWidth = isMobile ? "80vw" : "280px";
     const createButtonEnabled =
         1 < numberOfPlayers && numberOfPlayers < 7 && validName(name);
     const joinButtonEnabled = validName(name) && validRoomCode(roomCode);
     return (
         <Stack
-            direction="row"
+            direction={isMobile ? "column" : "row"}
             alignItems="center"
             justifyContent="center"
-            spacing={6}
+            spacing={isMobile ? 3 : 6}
+            sx={{ px: 2 }}
         >
-            <img
+            <Box
+                component="img"
                 src={coupImage}
                 alt="Coup"
-                style={{ height: "400px", borderRadius: "10px" }}
+                sx={{ 
+                    maxHeight: isMobile ? "200px" : "400px",
+                    maxWidth: "90vw",
+                    borderRadius: "10px",
+                    objectFit: "contain"
+                }}
             />
             <Stack
                 direction="column"
                 alignItems="center"
                 justifyContent="space-evenly"
-                height="50vh"
+                sx={{ minHeight: isMobile ? "auto" : "50vh" }}
                 spacing={2}
             >
             <TextField
                 label="Enter your name"
                 variant="outlined"
-                sx={{ width: columnWidth }}
+                sx={{ width: columnWidth, maxWidth: "90vw" }}
                 error={name.length > 0 && !validName(name)}
                 helperText={
                     name.length > 0 && !validName(name)
-                        ? "Name must be 4-16 characters long and contain only letters and numbers."
+                        ? "Name must be 4-16 alphanumeric characters."
                         : ""
                 }
                 onChange={(event) => setName(event.target.value)}
             />
             <Stack direction="row" alignItems="center" spacing={2}>
-                <FormControl variant="filled" sx={{ width: columnWidth }}>
+                <FormControl variant="filled" sx={{ width: columnWidth, maxWidth: "90vw" }}>
                     <InputLabel id="number-of-players-label">
                         Number of players
                     </InputLabel>
@@ -94,7 +106,7 @@ function Creation({ sendMessage }) {
             <Button
                 variant="contained"
                 disabled={!createButtonEnabled}
-                sx={{ width: columnWidth }}
+                sx={{ width: columnWidth, maxWidth: "90vw" }}
                 onClick={() =>
                     createAndJoinLobby(
                         name,
@@ -108,7 +120,7 @@ function Creation({ sendMessage }) {
             <Typography variant="h6" textAlign="center" color="primary">
                 OR
             </Typography>
-            <Stack direction="column" alignItems="center" spacing={1}>
+            <Stack direction="column" alignItems="center" spacing={1} sx={{ width: "100%" }}>
                 <TextField
                     label="Enter room code"
                     variant="filled"
@@ -125,7 +137,7 @@ function Creation({ sendMessage }) {
                 <Button
                     variant="contained"
                     disabled={!joinButtonEnabled}
-                    sx={{ width: columnWidth }}
+                    sx={{ width: columnWidth, maxWidth: "90vw" }}
                     onClick={() =>
                         joinLobby(name, roomCode, sendMessage)
                     }

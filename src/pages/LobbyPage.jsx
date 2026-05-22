@@ -7,18 +7,18 @@ import Header from "../components/Header";
 
 function LobbyPage({ lobbyState, sendMessage, playerUuid }) {
   return (
-    <Container>
+    <Container maxWidth="lg">
     <Box
       sx={{
         flexDirection: 'column',
         display: 'flex',
         minHeight: '90vh',
-        maxWidth: '80vw',
         justifyContent: 'space-between',
-        padding: '5vh',
+        py: { xs: 2, sm: 4 },
+        px: { xs: 1, sm: 2 },
       }}
     >
-        <Header title="Welcome to the private Coup lobby" subtitle="Please wait until all players have joined."/>
+        <Header title="Private Coup Lobby" subtitle="Waiting for players to join..."/>
         <Lobby lobbyState={lobbyState} sendMessage={sendMessage} isCreator={playerUuid === lobbyState.creator_uuid} />
         <Footer />
     </Box>

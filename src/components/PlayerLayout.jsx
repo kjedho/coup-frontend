@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 function PlayerLayout({ gameState, sendMessage }) {
     const playerCards = gameState.players.map((player, index) => (
-        <Grid item sm={4} key={index}>
+        <Grid item xs={12} sm={6} md={4} key={index}>
             <PlayerCard
                 gameState={gameState}
                 playerState={player}
@@ -13,7 +13,13 @@ function PlayerLayout({ gameState, sendMessage }) {
         </Grid>
     ));
     return (
-        <Grid container justifyContent="space-evenly" rowSpacing={4}>
+        <Grid 
+            container 
+            justifyContent="space-evenly" 
+            rowSpacing={{ xs: 2, sm: 4 }}
+            columnSpacing={{ xs: 1, sm: 2 }}
+            sx={{ px: { xs: 1, sm: 2 } }}
+        >
             {playerCards}
         </Grid>
     );
